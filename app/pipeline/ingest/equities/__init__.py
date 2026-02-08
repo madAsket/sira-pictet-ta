@@ -1,0 +1,1 @@
+"""Equities ingestion pipeline package."""

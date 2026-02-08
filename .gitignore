@@ -1,0 +1,43 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.Python
+
+# Packaging
+build/
+dist/
+*.egg-info/
+*.egg
+pip-wheel-metadata/
+.eggs/
+
+
+# Tests / tooling
+.pytest_cache/
+.tox/
+.coverage
+.ruff_cache
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Environment files
+.env
+
+# Project data
+db/*.db
+.qdrant_storage/
+
+data/uploads
+

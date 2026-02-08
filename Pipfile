@@ -1,0 +1,25 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[requires]
+python_version = "3.14"
+
+[packages]
+fastapi = "*"
+uvicorn = {extras = ["standard"], version = "*"}
+sqlalchemy = "*"
+pandas = "*"
+openpyxl = "*"
+rapidfuzz = "*"
+python-dotenv = "*"
+qdrant-client = "*"
+pypdf = "*"
+tiktoken = "*"
+openai = "*"
+python-multipart = "*"
+
+[dev-packages]
+pytest = "*"
+ruff = "*"
