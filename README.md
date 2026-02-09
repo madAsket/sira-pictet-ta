@@ -17,10 +17,9 @@ cp .env.example .env
 docker compose up -d qdrant  # or: docker-compose up -d qdrant
 make ingest-equities
 make ingest-pdfs
-make api-debug
+make api
+# Open Swagger UI: `http://localhost:8020/docs`
 ```
-
-By default the API runs on `http://localhost:8020`.
 
 ## Data initialization
 
@@ -38,10 +37,9 @@ By default the API runs on `http://localhost:8020`.
 
 ## Swagger: how to test requests
 
-After `make api-debug`:
+After `make api`:
 
 - Swagger UI: `http://localhost:8020/docs`
-- OpenAPI schema: `http://localhost:8020/openapi.json`
 
 ### POST /ask
 
@@ -56,7 +54,7 @@ After `make api-debug`:
 
 Helpful:
 
-- `make api-debug` in query parameters will return technical fields (`sql`, `sql_rows_preview`, `errors`, etc.).
+- With `debug=true` in query parameters will return technical fields (`sql`, `sql_rows_preview`, `errors`, etc.).
 
 ### POST /upload/equities
 
@@ -82,6 +80,7 @@ The full list of variables is in `.env.example`.
 - "Show me the top by european region"
 - "What is the target price and recommendation for Tesla?"
 - "Show me the top software companies"
+- "CARLB DC brief forecast"
 
 ## Assumptions and limitations
 1. Intent routing, entity resolution, Text to SQL, and the final answer could send a query to the wrong branch or map it to the wrong company, so the prompts and pipelines logic need some minor tweaks:
@@ -90,6 +89,8 @@ The full list of variables is in `.env.example`.
     3. SIRA needs more precise heuristics to decide where to fetch data from: the equities table or the PDF. The current signals are a bit too broad and can misroute edge cases.
     4. When intent comes back as unknown, the pipeline runs both SQL and RAG to maximize recall. That improves coverage but increases latency and model spend.
     5. Text to SQL is limited to read-only SELECT queries against a single table (equities).
+    6. Company info extraction from user' question is heuristic-only. I'd add an LLM fallback here.
+    7. Name-based resolution is currently rejected for rows with the same company names in dataset, so a generic query like "Nokia" may return "No matches found" response.
 2. Scaling limitations:
     1. Caching, batching, and per-request budgets aren't implemented yet.
     2. SQLite is file-based - not ideal for concurrent writes or scaling.
@@ -100,3 +101,4 @@ The full list of variables is in `.env.example`.
     7. Orchestration of pipelines needs to be brought into a common contract.
     8. Expand support for uploaded file types and their validation.
     9. The implementation is currently tied to OpenAI models only. Swapping providers would require some refactoring.
+    10. Entity resolver (retrieves companies names, tickets etc. from user' question) loads the full company catalog from DB and builds in-memory indexes, so every API call re-reads the DB. A better approach is to load the resolver once at startup as singletone and refresh the index only when data changes, or move aliases and tickers into dedicated indexed tables.

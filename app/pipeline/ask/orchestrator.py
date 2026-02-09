@@ -125,25 +125,6 @@ class AskPipelineOrchestrator:
         context = self.sql_stage.run(context)
         context = self.rag_stage.run(context)
         context = self.compose_stage.run(context)
-
-        if self.composer_debug_flags_enabled:
-            context.errors.append(
-                AppError(
-                    code=ErrorCode.COMPOSER_DEBUG_FLAGS,
-                    message="Composer input flags captured from pipeline outputs.",
-                    details={
-                        "had_sql_rows": bool(context.sql_rows_preview if context.sql_result.success else []),
-                        "had_rag_snippets": bool(
-                            context.rag_context_snippets if context.rag_result.success else []
-                        ),
-                        "entities_used": [
-                            str(item.get("isin")).strip()
-                            for item in context.entities
-                            if str(item.get("isin", "")).strip()
-                        ],
-                    },
-                )
-            )
         return context
 
     def process(self, *, question: str) -> PipelineResult:
